@@ -11,7 +11,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build-and-release:
-    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/') || startsWith(github.event.head_commit.message, 'release: ')
+    if: >-
+      github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/') || startsWith(github.event.head_commit.message, 'release: ')
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
@@ -20,7 +21,7 @@ jobs:
       - name: Install build and test dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends python3-tk python3-gi gir1.2-gtk-3.0 gir1.2-ayatanaappindicator3-0.1 fonts-noto-cjk xvfb xauth dbus-x11 openbox stalonetray xcompmgr libxtst6 black nsis msitools gcc-mingw-w64-x86-64 curl
+          sudo apt-get install -y --no-install-recommends python3-tk python3-gi gir1.2-gtk-3.0 gir1.2-ayatanaappindicator3-0.1 fonts-noto-cjk xvfb xauth dbus-x11 openbox stalonetray xcompmgr libxtst6 black python3-yaml nsis msitools gcc-mingw-w64-x86-64 curl
       - name: Validate release version
         env:
           PYTHONPATH: src
@@ -37,6 +38,7 @@ jobs:
           NO_AT_BRIDGE: '1'
         run: |
           black --check src tests scripts packaging
+          python3 -c "from pathlib import Path; import yaml; [yaml.safe_load(p.read_text()) for p in Path('.github/workflows').glob('*.yml')]"
           xvfb-run -a python3 tests/smoke_core.py
           xvfb-run -a python3 tests/smoke_themes.py
           dbus-run-session -- xvfb-run -a python3 tests/smoke_desktop.py
