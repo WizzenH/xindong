@@ -1,0 +1,61 @@
+name: Release
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: release
+  cancel-in-progress: false
+jobs:
+  build-and-release:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/') || startsWith(github.event.head_commit.message, 'release: ')
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Install build and test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends python3-tk python3-gi gir1.2-gtk-3.0 gir1.2-ayatanaappindicator3-0.1 fonts-noto-cjk xvfb xauth dbus-x11 openbox stalonetray xcompmgr libxtst6 black nsis msitools gcc-mingw-w64-x86-64 curl
+      - name: Validate release version
+        env:
+          PYTHONPATH: src
+        run: |
+          version=$(python3 -c 'from salary_motivator import __version__; print(__version__)')
+          if [[ "$GITHUB_REF" == refs/tags/* && "$GITHUB_REF_NAME" != "v$version" ]]; then
+            echo 'Tag and package version do not match.' >&2
+            exit 1
+          fi
+          echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
+      - name: Validate source and desktop behavior
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          NO_AT_BRIDGE: '1'
+        run: |
+          black --check src tests scripts packaging
+          xvfb-run -a python3 tests/smoke_core.py
+          xvfb-run -a python3 tests/smoke_themes.py
+          dbus-run-session -- xvfb-run -a python3 tests/smoke_desktop.py
+          dbus-run-session -- xvfb-run -a python3 tests/smoke_indicator.py
+      - name: Build Linux and Windows installers
+        run: |
+          python3 packaging/build_deb.py
+          python3 packaging/fetch_runtime.py
+          python3 packaging/build_windows.py
+          python3 packaging/release_assets.py
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v$RELEASE_VERSION" \
+            "dist/SalaryMotivator-$RELEASE_VERSION-win64-setup.exe" \
+            "dist/salary-motivator_${RELEASE_VERSION}_all.deb" \
+            "dist/xindong-$RELEASE_VERSION-source.zip" \
+            dist/SHA256SUMS \
+            --target "$GITHUB_SHA" \
+            --title "薪动 v$RELEASE_VERSION" \
+            --notes-file "docs/releases/v$RELEASE_VERSION.md"

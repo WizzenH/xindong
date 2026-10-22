@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Salary Motivator
+Name[zh_CN]=上班鼓励器
+Comment=Watch your daily salary grow
+Comment[zh_CN]=让每一秒的努力都有回响
+Exec=/usr/bin/salary-motivator
+TryExec=/usr/bin/salary-motivator
+Icon=salary-motivator
+Terminal=false
+Categories=Utility;Finance;
+StartupNotify=false

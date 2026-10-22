@@ -1,0 +1,18 @@
+# Generated packages and isolated build/test environments
+/dist/
+/.build-2503/
+/build/
+*.egg-info/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.DS_Store
+Thumbs.db
+# Local-only settings, credentials and editor metadata
+.env
+.env.*
+*.log
+/.local/
