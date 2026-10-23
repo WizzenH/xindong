@@ -3,6 +3,7 @@
 import datetime as dt
 import os
 import queue
+from pathlib import Path
 import time
 import tkinter as tk
 from tkinter import ttk
@@ -19,9 +20,19 @@ class SalaryWidget:
         self.config = load_settings()
         self.theme = THEMES[self.config["theme"]]
         self.controls = []
-        self.root = tk.Tk()
+        self.root = tk.Tk(className="SalaryMotivator")
         self.root.withdraw()
         self.root.title("上班鼓励器")
+        self.window_icon = tk.PhotoImage(
+            master=self.root,
+            file=str(Path(__file__).parent / "assets/icon.png"),
+        )
+        self.root.iconphoto(
+            True,
+            self.window_icon,
+            self.window_icon.subsample(4),
+            self.window_icon.subsample(8),
+        )
         self.root.geometry("420x286")
         self.root.resizable(False, False)
         self.root.configure(bg=self.theme.background)
@@ -44,6 +55,10 @@ class SalaryWidget:
         self.refresh_chrome()
         self.apply_opacity(self.config["opacity"])
         self.root.deiconify()
+        if os.name == "nt":
+            icon = Path(__file__).parent / "assets/icon.ico"
+            if icon.exists():
+                self.root.iconbitmap(str(icon))
         self.tick()
         self.poll_tray()
 

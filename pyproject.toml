@@ -24,7 +24,7 @@ salary-motivator = "salary_motivator.app:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-salary_motivator = ["assets/*.svg", "assets/*.ico"]
+salary_motivator = ["assets/*.svg", "assets/*.ico", "assets/*.png"]
 
 [tool.setuptools.dynamic]
 version = {attr = "salary_motivator.__version__"}

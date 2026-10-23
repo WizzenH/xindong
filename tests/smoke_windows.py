@@ -55,6 +55,10 @@ user.FindWindowW.argtypes = [W.LPCWSTR, W.LPCWSTR]
 user.FindWindowW.restype = W.HWND
 user.keybd_event.argtypes = [W.BYTE, W.BYTE, W.DWORD, C.c_size_t]
 hwnd = user.GetParent(a.root.winfo_id())
+user.SendMessageW.argtypes = [W.HWND, W.UINT, W.WPARAM, W.LPARAM]
+user.SendMessageW.restype = W.LPARAM
+assert user.SendMessageW(hwnd, 0x007F, 0, 0), "missing small taskbar icon"
+assert user.SendMessageW(hwnd, 0x007F, 1, 0), "missing large taskbar icon"
 assert not user.GetWindowLongW(hwnd, -16) & 0x00C00000, "caption reappeared"
 assert user.GetWindowLongW(hwnd, -20) & 0x40000, "missing taskbar app window style"
 a.config["minimize_to_tray"] = False
@@ -74,8 +78,7 @@ pump_until(lambda: not a.hidden_to_tray and a.root.winfo_ismapped())
 a.hide_to_tray()
 user.PostMessageW(a.tray.hwnd, 0x8001, 1, 0x0205)
 pump_until(lambda: user.FindWindowW("#32768", None))
-user.keybd_event(0x4F, 0, 0, 0)
-user.keybd_event(0x4F, 0, 2, 0)
+user.PostMessageW(user.FindWindowW("#32768", None), 0x0102, ord("o"), 0)
 pump_until(lambda: a.dialog is not None and a.dialog.winfo_exists())
 a.settings()
 a.root.update()
@@ -114,8 +117,7 @@ assert payroll.load_settings()["opacity"] == 85
 # Quit from the real native tray menu and verify that its message loop ends.
 user.PostMessageW(a.tray.hwnd, 0x8001, 1, 0x0205)
 pump_until(lambda: user.FindWindowW("#32768", None))
-user.keybd_event(0x51, 0, 0, 0)
-user.keybd_event(0x51, 0, 2, 0)
+user.PostMessageW(user.FindWindowW("#32768", None), 0x0102, ord("q"), 0)
 pump_until(lambda: a.closed)
 assert not a.tray.thread.is_alive()
 # End the held instance lock, then run the real installed launch path.

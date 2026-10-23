@@ -10,3 +10,4 @@ Icon=salary-motivator
 Terminal=false
 Categories=Utility;Finance;
 StartupNotify=false
+StartupWMClass=Salarymotivator

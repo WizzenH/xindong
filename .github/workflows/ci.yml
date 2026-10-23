@@ -16,7 +16,7 @@ jobs:
       - name: Install desktop test dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends python3-tk python3-gi gir1.2-gtk-3.0 gir1.2-ayatanaappindicator3-0.1 fonts-noto-cjk xvfb xauth dbus-x11 openbox stalonetray xcompmgr libxtst6 black python3-yaml
+          sudo apt-get install -y --no-install-recommends python3-tk python3-gi gir1.2-gtk-3.0 gir1.2-ayatanaappindicator3-0.1 fonts-noto-cjk xvfb xauth x11-utils dbus-x11 openbox stalonetray xcompmgr libxtst6 black python3-yaml
       - name: Check formatting and workflow syntax
         run: |
           black --check src tests scripts packaging

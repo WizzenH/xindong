@@ -76,6 +76,13 @@ try:
         assert migrated["opacity"] == 90 and migrated["minimize_to_tray"]
         app = m.SalaryWidget()
         pump_until(lambda: app.tray.ready)
+        # The taskbar reads the WM's actual icon property, not the tray icon.
+        properties = subprocess.check_output(
+            ["xprop", "-name", app.root.title(), "_NET_WM_ICON", "WM_CLASS"],
+            text=True,
+        )
+        assert "_NET_WM_ICON(CARDINAL)" in properties, properties
+        assert '"Salarymotivator"' in properties, properties[-200:]
         assert not app.root.overrideredirect()
         assert abs(app.root.attributes("-alpha") - 0.9) < 0.01
         # Preview and cancel must restore the saved transparency.

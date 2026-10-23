@@ -20,14 +20,14 @@
 
 ### Windows 10 / 11（64 位）
 
-从 [Releases](https://github.com/WizzenH/xindong/releases) 下载 `SalaryMotivator-1.2.0-win64-setup.exe` 并运行。安装包内置运行时，无需另装 Python；安装到当前用户目录，不需要管理员权限。安装包未进行代码签名。
+从 [Releases](https://github.com/WizzenH/xindong/releases) 下载 `SalaryMotivator-1.2.1-win64-setup.exe` 并运行。安装包内置运行时，无需另装 Python；安装到当前用户目录，不需要管理员权限。安装包未进行代码签名。
 
 ### Debian / Ubuntu / 麒麟
 
-下载 `salary-motivator_1.2.0_all.deb`，在下载目录执行：
+下载 `salary-motivator_1.2.1_all.deb`，在下载目录执行：
 
 ```sh
-sudo apt install ./salary-motivator_1.2.0_all.deb
+sudo apt install ./salary-motivator_1.2.1_all.deb
 ```
 
 安装后在应用菜单搜索“上班鼓励器”。系统依赖由 apt 处理，首次安装默认随桌面登录启动，可在设置中关闭。
